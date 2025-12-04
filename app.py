@@ -1,8 +1,10 @@
 
 import streamlit as st
 import requests
+from datetime import datetime
 
 DOCSEND_API_URL = "https://docsend2pdf.com/api/convert"
+
 
 def fetch_docsend_pdf(url, email=None, passcode=None):
     payload = {
@@ -24,7 +26,9 @@ def fetch_docsend_pdf(url, email=None, passcode=None):
         raise RuntimeError(f"Docsend2PDF API error {resp.status_code}: {err_msg}")
 
     if "application/pdf" not in resp.headers.get("Content-Type", ""):
-        raise RuntimeError(f"Unexpected content type from API: {resp.headers.get('Content-Type', '')}")
+        raise RuntimeError(
+            f"Unexpected content type from API: {resp.headers.get('Content-Type', '')}"
+        )
 
     return resp.content
 
@@ -39,6 +43,10 @@ def main():
         )
         email = st.text_input("Email (optional, if required)")
         passcode = st.text_input("Passcode (optional, if required)")
+        file_name_input = st.text_input(
+            "PDF File Name (optional)",
+            placeholder=""
+        )
 
         submitted = st.form_submit_button("Fetch PDF")
 
@@ -56,10 +64,18 @@ def main():
                 )
 
             st.success("PDF is ready.")
+
+            # Use custom name if provided, otherwise default pattern
+            if file_name_input.strip():
+                download_name = file_name_input.strip()
+            else:
+                timestamp = datetime.now().strftime("%y%m%d_%H%M")
+                download_name = f"{timestamp}_DocSend_Deck.pdf"
+
             st.download_button(
                 "Download PDF now",
                 data=pdf_bytes,
-                file_name="docsend_document.pdf",
+                file_name=download_name,
                 mime="application/pdf"
             )
 
