@@ -67,7 +67,7 @@ def main():
 
             # Use custom name if provided, otherwise default pattern
             if file_name_input.strip():
-                download_name = file_name_input.strip()
+                download_name = file_name_input.strip() + ".pdf"
             else:
                 timestamp = datetime.now().strftime("%y%m%d_%H%M")
                 download_name = f"{timestamp}_DocSend_Deck.pdf"
